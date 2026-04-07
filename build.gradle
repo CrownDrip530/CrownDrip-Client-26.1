@@ -7,7 +7,7 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = "hacked-client"
 }
 
 repositories {
@@ -17,11 +17,11 @@ repositories {
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     
-    // NOTE: mappings are NOT used in 26.1 because the game is unobfuscated.
+    // 26.1 is unobfuscated, so no mappings are needed
     
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     
-    // Uncomment the line below if you decide to use Fabric API later
+    // Uncomment if you use Fabric API
     // implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
@@ -44,9 +44,9 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
+// This block is now safe and will still include your LICENSE in the JAR
 jar {
-    // Simplified to avoid NullPointerException
     from("LICENSE") {
-        rename { "${it}_${project.archives_base_name}" }
+        // We removed the 'rename' part that was causing the crash
     }
 }
