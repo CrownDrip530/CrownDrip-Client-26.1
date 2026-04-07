@@ -16,12 +16,12 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings( )
     
-    // Use standard 'implementation' instead of 'modImplementation' for 26.1
+    // NOTE: mappings are NOT used in 26.1 because the game is unobfuscated.
+    
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     
-    // Uncomment the line below if you need Fabric API features
+    // Uncomment the line below if you decide to use Fabric API later
     // implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
@@ -29,7 +29,7 @@ processResources {
     inputs.property "version", project.version
     filteringCharset "UTF-8"
 
-    filesMatching("fabric.mod.json") {
+    filesMatching("fabric.mod.json" ) {
         expand "version": project.version
     }
 }
@@ -42,4 +42,10 @@ java {
     withSourcesJar()
     sourceCompatibility = JavaVersion.VERSION_25
     targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesName.get()}"}
+    }
 }
