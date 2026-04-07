@@ -4,7 +4,7 @@ import com.hack.modules.HackModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.*;;
+import net.minecraft.world.item.*;
 import net.minecraft.world.inventory.ClickType;
 
 /**
