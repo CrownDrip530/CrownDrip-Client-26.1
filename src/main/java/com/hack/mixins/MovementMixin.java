@@ -12,18 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * MovementMixin - Handles FlyHack and NoFall packet manipulation.
- *
- * Injects at HEAD of sendMovementPackets() so our changes to onGround
- * and velocity are what gets sent to the server in the position packet.
- *
- * NoFall: setting onGround=true here means the server receives a packet
- * saying the player is on the ground every tick, so fall distance never
- * accumulates server-side and no fall damage is applied.
  */
 @Mixin(LocalPlayer.class)
 public class MovementMixin {
 
-    @Inject(method = "sendMovementPackets", at = @At("HEAD"))
+    @Inject(method = "sendPosition", at = @At("HEAD"))
     private void beforeMovementPacket(CallbackInfo ci) {
         if (HackClient.moduleManager == null) return;
 
@@ -33,13 +26,13 @@ public class MovementMixin {
         NoFall noFall = HackClient.moduleManager.get(NoFall.class);
         if (noFall != null && noFall.isEnabled()) {
             player.setOnGround(true);
-            player.fallDistance = 0.0;
+            player.fallDistance = 0.0f;
         }
 
         // FlyHack: cancel gravity and fake ground
         FlyHack flyHack = HackClient.moduleManager.get(FlyHack.class);
         if (flyHack != null && flyHack.isEnabled()) {
-            player.setDeltaMovement(player.getVelocity().x, 0, player.getVelocity().z);
+            player.setDeltaMovement(player.getDeltaMovement().x, 0, player.getDeltaMovement().z);
             player.setOnGround(true);
         }
 
