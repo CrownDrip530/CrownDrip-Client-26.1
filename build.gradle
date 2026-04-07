@@ -45,7 +45,8 @@ java {
 }
 
 jar {
+    // Simplified to avoid NullPointerException
     from("LICENSE") {
-        rename { "${it}_${project.archivesName.get()}"}
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
