@@ -8,22 +8,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
-
 import java.util.List;
 
 /**
  * KillAura — auto attacks nearby entities.
- *
- * MultiHit mode: sends N attack packets per tick, bypassing the
- * vanilla cooldown. Works with all weapon enchantments (Fire Aspect,
- * Sharpness, Knockback etc) since the server applies them to each packet.
- *
- * MultiHit slider: how many hits to send per tick (1-10).
- * At 1 = normal speed. At 5 = 5x attack speed.
- * Combined with CPS slider for fine control.
  */
 public class KillAura extends HackModule {
-
     private final Minecraft mc = Minecraft.getInstance();
     private LivingEntity currentTarget = null;
 
@@ -58,7 +48,6 @@ public class KillAura extends HackModule {
 
         float range = rangeSetting.value;
         AABB searchBox = player.getBoundingBox().inflate(range);
-
         AntiBot antiBot = HackClient.moduleManager == null ? null :
                 HackClient.moduleManager.get(AntiBot.class);
 
@@ -81,11 +70,9 @@ public class KillAura extends HackModule {
 
         currentTarget = target;
 
-        // MultiHit: send N attack packets per tick
-        // Each packet is processed independently by the server with full enchant effects
         int hits = Math.max(1, (int) multiHitSetting.value);
         for (int i = 0; i < hits; i++) {
-            mc.gameMode.attack(mc.player, player, target);
+            mc.gameMode.attack(player, target);
         }
         player.swing(InteractionHand.MAIN_HAND);
     }
