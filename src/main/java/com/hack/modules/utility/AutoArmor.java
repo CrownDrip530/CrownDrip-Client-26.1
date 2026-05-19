@@ -9,12 +9,8 @@ import net.minecraft.world.inventory.ClickType;
 
 /**
  * AutoArmor — automatically equips best armor from inventory.
- *
- * 1.21.11: Uses Item.getSlotType() which still exists on ArmorItem,
- * with fallback to name-based detection.
  */
 public class AutoArmor extends HackModule {
-
     private final Minecraft mc = Minecraft.getInstance();
     private int cooldown = 0;
 
@@ -33,7 +29,7 @@ public class AutoArmor extends HackModule {
         };
 
         for (EquipmentSlot slot : armorSlots) {
-            ItemStack current = p.getEquippedStack(slot);
+            ItemStack current = p.getItemBySlot(slot);
             int currentTier = getArmorTier(current);
             int bestSlot = -1;
             int bestTier = currentTier;
@@ -51,9 +47,8 @@ public class AutoArmor extends HackModule {
 
             if (bestSlot != -1) {
                 int screenSlot = bestSlot < 9 ? 36 + bestSlot : bestSlot;
-                int syncId = p.playerScreenHandler.syncId;
-                mc.gameMode.clickSlot(syncId, screenSlot, 0,
-                    ClickType.QUICK_MOVE, p);
+                int syncId = p.inventoryMenu.containerId;
+                mc.gameMode.handleInventoryMouseClick(syncId, screenSlot, 0, ClickType.QUICK_MOVE, p);
                 cooldown = 10;
                 return;
             }

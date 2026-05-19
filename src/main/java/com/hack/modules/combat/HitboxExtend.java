@@ -10,14 +10,8 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * HitboxExtend - Expands enemy hitboxes making them easier to hit.
- *
- * FIXES:
- * - Only expands OTHER players' hitboxes (HitboxMixin excludes local player)
- * - Renders expanded hitbox outlines on screen so you can see them
- * - No performance impact on local player movement/collision
  */
 public class HitboxExtend extends HackModule {
-
     private final Minecraft mc = Minecraft.getInstance();
     public final Setting expandSetting = new Setting("Size", 0.5f, 0.0f, 5.0f);
 
@@ -33,18 +27,15 @@ public class HitboxExtend extends HackModule {
 
         for (Player player : mc.level.players()) {
             if (player == mc.player) continue;
-
             float exp = expandSetting.value;
-            // Calculate expanded box from player dimensions directly
-            // (don't call getBoundingBox() - it already returns expanded box via HitboxMixin)
-            double hw = player.getBbWidth() / 2.0 + exp; // half-width + expansion
-            double ht = player.getBbHeight() + exp;       // height + expansion
+            
+            double hw = player.getBbWidth() / 2.0 + exp;
+            double ht = player.getBbHeight() + exp;
             AABB bb = new AABB(
                 player.getX() - hw, player.getY() - exp, player.getZ() - hw,
                 player.getX() + hw, player.getY() + ht,  player.getZ() + hw
             );
 
-            // Project expanded box corners to screen
             Vec3 top    = new Vec3(player.getX(), bb.maxY, player.getZ());
             Vec3 bottom = new Vec3(player.getX(), bb.minY, player.getZ());
             Vec3 left   = new Vec3(bb.minX, player.getY() + player.getBbHeight()/2, player.getZ());
@@ -64,7 +55,6 @@ public class HitboxExtend extends HackModule {
 
             if (y1 > y2) { int tmp = y1; y1 = y2; y2 = tmp; }
 
-            // Cyan dashed box outline
             int color = 0xFF00FFFF;
             ctx.fill(x1,   y1,   x2,   y1+1, color);
             ctx.fill(x1,   y2-1, x2,   y2,   color);

@@ -12,9 +12,7 @@ import net.minecraft.resources.ResourceLocation;
  * AntiPotion — removes negative status effects every tick.
  */
 public class AntiPotion extends HackModule {
-
     private final Minecraft mc = Minecraft.getInstance();
-
     private static final String[] NEGATIVE_EFFECTS = {
         "slowness", "weakness", "blindness", "nausea", "poison",
         "wither", "mining_fatigue", "hunger", "levitation",
@@ -33,13 +31,11 @@ public class AntiPotion extends HackModule {
 
         for (String effectId : NEGATIVE_EFFECTS) {
             try {
-                // Use getEntry(Identifier) which exists in 1.21.11
                 Holder<MobEffect> entry = BuiltInRegistries.MOB_EFFECT
-                    .get(net.minecraft.resources.ResourceLocation.parse("minecraft:" + effectId))
+                    .getHolder(ResourceLocation.withDefaultNamespace(effectId))
                     .orElse(null);
-
-                if (entry != null && p.hasMobEffect(entry)) {
-                    p.removeMobEffect(entry);
+                if (entry != null && p.hasEffect(entry)) {
+                    p.removeEffect(entry);
                 }
             } catch (Exception ignored) {}
         }

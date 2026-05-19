@@ -7,22 +7,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Xray — highlights ores through terrain via screen-space dots.
- * Uses CopyOnWriteArrayList to prevent ConcurrentModificationException
- * between onTick (game thread) and renderHud (render thread).
  */
 public class Xray extends HackModule {
-
     private final Minecraft mc = Minecraft.getInstance();
     public final Setting rangeSetting = new Setting("Range", 8.0f, 3.0f, 16.0f);
-
-    // CopyOnWriteArrayList is thread-safe for read/write from different threads
     private final CopyOnWriteArrayList<int[]> orePositions = new CopyOnWriteArrayList<>();
     private int scanTimer = 0;
 
@@ -35,14 +29,13 @@ public class Xray extends HackModule {
     @Override
     public void onTick() {
         if (!isEnabled() || mc.player == null || mc.level == null) return;
-
         scanTimer++;
-        if (scanTimer < 40) return; // scan every 40 ticks = 2 seconds
+        if (scanTimer < 40) return;
         scanTimer = 0;
 
         int range = (int) rangeSetting.value;
         List<int[]> newOres = new ArrayList<>();
-        BlockPos center = mc.player.getBlockPos();
+        BlockPos center = mc.player.blockPosition();
         int maxOres = 100;
 
         outer:
@@ -59,8 +52,6 @@ public class Xray extends HackModule {
                 }
             }
         }
-
-        // Atomic swap - safe between threads
         orePositions.clear();
         orePositions.addAll(newOres);
     }
@@ -79,19 +70,6 @@ public class Xray extends HackModule {
 
     @Override
     public void onDisable() { orePositions.clear(); scanTimer = 0; }
-
-    public static boolean isOreBlock(Block block) {
-        return block == Blocks.DIAMOND_ORE || block == Blocks.DEEPSLATE_DIAMOND_ORE
-            || block == Blocks.EMERALD_ORE || block == Blocks.DEEPSLATE_EMERALD_ORE
-            || block == Blocks.GOLD_ORE || block == Blocks.DEEPSLATE_GOLD_ORE
-            || block == Blocks.IRON_ORE || block == Blocks.DEEPSLATE_IRON_ORE
-            || block == Blocks.REDSTONE_ORE || block == Blocks.DEEPSLATE_REDSTONE_ORE
-            || block == Blocks.ANCIENT_DEBRIS || block == Blocks.LAPIS_ORE
-            || block == Blocks.DEEPSLATE_LAPIS_ORE || block == Blocks.COAL_ORE
-            || block == Blocks.DEEPSLATE_COAL_ORE || block == Blocks.COPPER_ORE
-            || block == Blocks.DEEPSLATE_COPPER_ORE || block == Blocks.NETHER_QUARTZ_ORE
-            || block == Blocks.NETHER_GOLD_ORE;
-    }
 
     private int getOreColor(Block block) {
         if (block == Blocks.DIAMOND_ORE || block == Blocks.DEEPSLATE_DIAMOND_ORE) return 0xFF00FFFF;
