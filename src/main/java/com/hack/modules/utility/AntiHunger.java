@@ -20,9 +20,9 @@ public class AntiHunger extends HackModule {
         LocalPlayer p = mc.player;
         if (p == null) return;
 
-        // In 1.21.1 (26.1), LocalPlayer has getFoodData() which returns HungerManager
+        // In 1.21.1 (26.1), FoodData uses setSaturation() instead of setSaturationLevel()
         p.getFoodData().setFoodLevel(20);
-        p.getFoodData().setSaturationLevel(20.0f);
+        p.getFoodData().setSaturation(20.0f);
         p.getFoodData().addExhaustion(-1000f);
     }
 }
