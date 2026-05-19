@@ -26,7 +26,7 @@ public class AutoEat extends HackModule {
         LocalPlayer p = mc.player;
         if (p == null || mc.gameMode == null) return;
 
-        if (p.getHungerManager().getFoodLevel() >= (int) threshSetting.value) {
+        if (p.getFoodData().getFoodLevel() >= (int) threshSetting.value) {
             restoreSlot(p); return;
         }
 

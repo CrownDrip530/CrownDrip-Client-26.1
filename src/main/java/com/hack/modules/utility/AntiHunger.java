@@ -6,16 +6,8 @@ import net.minecraft.client.player.LocalPlayer;
 
 /**
  * AntiHunger — keeps food and saturation at maximum every tick.
- *
- * HOW IT WORKS:
- * Sets foodLevel to 20 and saturationLevel to 20.0 every tick.
- * Client-side only — server still tracks hunger independently,
- * but prevents the client from sending exhaustion packets
- * that would reduce server-side hunger.
- * Also prevents the slowness effect from low hunger client-side.
  */
 public class AntiHunger extends HackModule {
-
     private final Minecraft mc = Minecraft.getInstance();
 
     public AntiHunger() {
@@ -28,8 +20,9 @@ public class AntiHunger extends HackModule {
         LocalPlayer p = mc.player;
         if (p == null) return;
 
-        p.getHungerManager().setFoodLevel(20);
-        p.getHungerManager().setSaturationLevel(20.0f);
-        p.getHungerManager().addExhaustion(-1000f); // cancel exhaustion buildup
+        // In 1.21.1 (26.1), LocalPlayer has getFoodData() which returns HungerManager
+        p.getFoodData().setFoodLevel(20);
+        p.getFoodData().setSaturationLevel(20.0f);
+        p.getFoodData().addExhaustion(-1000f);
     }
 }
