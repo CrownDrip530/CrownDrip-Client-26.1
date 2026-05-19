@@ -28,7 +28,8 @@ public class Teleport extends HackModule {
         if (mc.player == null) return;
         if (mc.getConnection() == null) return;
         try {
-            mc.player.absMoveTo(targetX, targetY, targetZ,
+            // In 1.21.1 (26.1), LocalPlayer uses moveTo() instead of absMoveTo()
+            mc.player.moveTo(targetX, targetY, targetZ,
                 mc.player.getYRot(), mc.player.getXRot());
             
             mc.getConnection().send(
