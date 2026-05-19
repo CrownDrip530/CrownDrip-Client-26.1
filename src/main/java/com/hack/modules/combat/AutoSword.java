@@ -4,12 +4,12 @@ import com.hack.modules.HackModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 
 /**
  * AutoSword — automatically switches to best sword/weapon before attacking.
  */
 public class AutoSword extends HackModule {
-
     private final Minecraft mc = Minecraft.getInstance();
     private int savedSlot = -1;
 
@@ -27,17 +27,16 @@ public class AutoSword extends HackModule {
 
         int bestSlot = -1;
         int bestTier = -1;
-
         for (int i = 0; i < 9; i++) {
             ItemStack stack = p.getInventory().getItem(i);
             int tier = getWeaponTier(stack);
             if (tier > bestTier) { bestTier = tier; bestSlot = i; }
         }
 
-        if (bestSlot != -1 && bestSlot != p.getInventory().getSelectedSlot()) {
-            if (savedSlot == -1) savedSlot = p.getInventory().getSelectedSlot();
-            p.getInventory().setSelectedSlot(bestSlot);
-            mc.getConnection().sendPacket(new net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket(bestSlot));
+        if (bestSlot != -1 && bestSlot != p.getInventory().selected) {
+            if (savedSlot == -1) savedSlot = p.getInventory().selected;
+            p.getInventory().selected = bestSlot;
+            mc.getConnection().send(new ServerboundSetCarriedItemPacket(bestSlot));
         }
     }
 
@@ -64,8 +63,8 @@ public class AutoSword extends HackModule {
 
     private void restoreSlot(LocalPlayer p) {
         if (savedSlot != -1) {
-            p.getInventory().setSelectedSlot(savedSlot);
-            mc.getConnection().sendPacket(new net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket(savedSlot));
+            p.getInventory().selected = savedSlot;
+            mc.getConnection().send(new ServerboundSetCarriedItemPacket(savedSlot));
             savedSlot = -1;
         }
     }
