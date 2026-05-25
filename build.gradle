@@ -1,8 +1,18 @@
-plugins {
-    // 修正一：升級 Loom 版本至 1.7+，才能支援 Java 25 與 26.1 的非混淆架構
-    id 'net.fabricmc.fabric-loom' version '1.7-SNAPSHOT'
-    id 'maven-publish'
+// 修正一：在 plugins 區塊之前，明確告知 Gradle 9.x 該去哪裡尋找 Fabric Loom 本身
+buildscript {
+    repositories {
+        maven { url = "https://maven.fabricmc.net/" }
+        mavenCentral()
+    }
+    dependencies {
+        // 使用 classPath 方式引入，這是解決最新版 Gradle 找不到第三方插件最穩固的做法
+        classpath "net.fabricmc:fabric-loom:1.9-SNAPSHOT"
+    }
 }
+
+// 修正二：改用 apply plugin 語法，避開 Gradle 9.x 嚴格的 plugins {} 倉庫限制
+apply plugin: 'net.fabricmc.fabric-loom'
+apply plugin: 'maven-publish'
 
 version = project.mod_version
 group = project.maven_group
@@ -13,18 +23,19 @@ base {
 
 repositories {
     maven { url = "https://maven.fabricmc.net/" }
-    maven { url = "https://minecraft.net" } // 確保 Mojang 官方庫下載順暢
+    maven { url = "https://minecraft.net" } 
+    mavenCentral()
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     
-    // 修正二：26.1 雖然不混淆，但必須宣告 Mojang 官方映射，Loom 才能為你的 IDE 產生去混淆的源碼！
+    // 26.1 的官方去混淆映射基礎
     mappings loom.officialMojangMappings()
     
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     
-    // 如果你未來要用 Fabric API，26.1 必備
+    // 如果你有使用 Fabric API，可取消註解
     // implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
@@ -48,7 +59,5 @@ java {
 }
 
 jar {
-    from("LICENSE") {
-        // 保持乾淨的封裝
-    }
+    from("LICENSE") {}
 }
