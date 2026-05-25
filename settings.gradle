@@ -1,6 +1,10 @@
 pluginManagement {
     repositories {
-        maven { url = "https://fabricmc.net" }
+        // 使用新版 Gradle 9.x 唯一合法的 Maven 倉庫宣告語法
+        maven {
+            name = "Fabric"
+            url = uri("https://fabricmc.net")
+        }
         mavenCentral()
         gradlePluginPortal()
     }
