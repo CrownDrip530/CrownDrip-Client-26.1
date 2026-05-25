@@ -1,5 +1,6 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.15-SNAPSHOT'
+    // 修正一：升級 Loom 版本至 1.7+，才能支援 Java 25 與 26.1 的非混淆架構
+    id 'net.fabricmc.fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -12,16 +13,18 @@ base {
 
 repositories {
     maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://minecraft.net" } // 確保 Mojang 官方庫下載順暢
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     
-    // 26.1 is unobfuscated, so no mappings are needed
+    // 修正二：26.1 雖然不混淆，但必須宣告 Mojang 官方映射，Loom 才能為你的 IDE 產生去混淆的源碼！
+    mappings loom.officialMojangMappings()
     
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     
-    // Uncomment if you use Fabric API
+    // 如果你未來要用 Fabric API，26.1 必備
     // implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
@@ -29,7 +32,7 @@ processResources {
     inputs.property "version", project.version
     filteringCharset "UTF-8"
 
-    filesMatching("fabric.mod.json" ) {
+    filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
 }
@@ -44,9 +47,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
-// This block is now safe and will still include your LICENSE in the JAR
 jar {
     from("LICENSE") {
-        // We removed the 'rename' part that was causing the crash
+        // 保持乾淨的封裝
     }
 }
