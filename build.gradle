@@ -1,18 +1,8 @@
-// 修正一：在 plugins 區塊之前，明確告知 Gradle 9.x 該去哪裡尋找 Fabric Loom 本身
-buildscript {
-    repositories {
-        maven { url = "https://maven.fabricmc.net/" }
-        mavenCentral()
-    }
-    dependencies {
-        // 使用 classPath 方式引入，這是解決最新版 Gradle 找不到第三方插件最穩固的做法
-        classpath "net.fabricmc:fabric-loom:1.9-SNAPSHOT"
-    }
+plugins {
+    // 透過 settings.gradle 的引導，Gradle 9.x 現在能完美下載並套用 1.9 正式架構的 Loom
+    id 'net.fabricmc.fabric-loom' version '1.9-SNAPSHOT'
+    id 'maven-publish'
 }
-
-// 修正二：改用 apply plugin 語法，避開 Gradle 9.x 嚴格的 plugins {} 倉庫限制
-apply plugin: 'net.fabricmc.fabric-loom'
-apply plugin: 'maven-publish'
 
 version = project.mod_version
 group = project.maven_group
@@ -22,7 +12,7 @@ base {
 }
 
 repositories {
-    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://fabricmc.net" }
     maven { url = "https://minecraft.net" } 
     mavenCentral()
 }
@@ -30,12 +20,12 @@ repositories {
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     
-    // 26.1 的官方去混淆映射基礎
+    // Minecraft 26.1 去混淆映射基礎
     mappings loom.officialMojangMappings()
     
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     
-    // 如果你有使用 Fabric API，可取消註解
+    // 如果未來需要加入 Fabric API 可取消註解
     // implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
