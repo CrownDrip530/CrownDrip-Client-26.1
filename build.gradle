@@ -1,6 +1,5 @@
 plugins {
-    // 透過 settings.gradle 的引導，Gradle 9.x 現在能完美下載並套用 1.9 正式架構的 Loom
-    id 'net.fabricmc.fabric-loom' version '1.9-SNAPSHOT'
+    id 'net.fabricmc.fabric-loom' version '1.8-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -12,7 +11,7 @@ base {
 }
 
 repositories {
-    maven { url = "https://fabricmc.net" }
+    maven { url = "https://fabricmc.net" } // 帶有 maven. 前綴的正式庫路徑
     maven { url = "https://minecraft.net" } 
     mavenCentral()
 }
@@ -20,13 +19,10 @@ repositories {
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     
-    // Minecraft 26.1 去混淆映射基礎
+    // 26.1 官方去混淆映射基礎（強制保留，自動工具才能運作）
     mappings loom.officialMojangMappings()
     
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    
-    // 如果未來需要加入 Fabric API 可取消註解
-    // implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 processResources {
