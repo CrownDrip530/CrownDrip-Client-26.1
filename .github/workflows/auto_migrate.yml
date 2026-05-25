@@ -1,7 +1,7 @@
 name: Auto Mapping Converter (26.1)
 
 on:
-  workflow_dispatch: # 允許在網頁畫面上手動點擊按鈕觸發
+  workflow_dispatch: # 允許網頁手動點擊觸發
 
 jobs:
   migrate:
@@ -16,17 +16,15 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: Setup Gradle Cache
+      - name: Setup Gradle (Force Stable 8.10.2)
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2' # 避開 9.x 第三方插件路徑解析崩潰的 Bug
 
       - name: Grant Execute Permission to Gradle
         run: chmod +x gradlew
 
       - name: Run Auto Mapping Changer (Translate to Mojang Official Mappings)
-        # 修正這裡：將對照參數修正為 "mojang"，並加入對應的 26.1 映射參數
         run: ./gradlew migrateMappings --mappings "mojang" --overrideInputsIHaveABackup
 
       - name: Auto Commit Remapped Code Back to GitHub
