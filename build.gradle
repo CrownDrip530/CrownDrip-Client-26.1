@@ -1,8 +1,17 @@
-plugins {
-    // 配合 settings.gradle，讓 Gradle 9.x 順利下載 1.9-SNAPSHOT 核心
-    id 'net.fabricmc.fabric-loom' version '1.9-SNAPSHOT'
-    id 'maven-publish'
+// 終極暴力法：直接用 buildscript 強行加載正確網址，完全繞過 Gradle 9.x 的惡意魔改
+buildscript {
+    repositories {
+        maven { url = "https://fabricmc.net" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.fabricmc:fabric-loom:1.9-SNAPSHOT"
+    }
 }
+
+// 避開 plugins 區塊，改用最底層的套用命令
+apply plugin: 'net.fabricmc.fabric-loom'
+apply plugin: 'maven-publish'
 
 version = project.mod_version
 group = project.maven_group
@@ -20,7 +29,7 @@ repositories {
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     
-    // 26.1 官方去混淆映射基礎
+    // Minecraft 26.1 去混淆映射基礎
     mappings loom.officialMojangMappings()
     
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
